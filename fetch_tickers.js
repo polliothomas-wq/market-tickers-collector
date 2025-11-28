@@ -1,3 +1,4 @@
+const fs = require("fs");
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
@@ -6,7 +7,6 @@ async function fetchPrices() {
     "https://query2.finance.yahoo.com/v7/finance/quote?symbols=AAPL,MSFT";
 
   const res = await fetch(url);
-
   const text = await res.text();
 
   try {
@@ -21,7 +21,11 @@ async function fetchPrices() {
 (async () => {
   try {
     const data = await fetchPrices();
-    console.log("Données récupérées :", data);
+
+    // Sauvegarde dans un fichier JSON
+    fs.writeFileSync("prices.json", JSON.stringify(data, null, 2));
+
+    console.log("prices.json créé avec succès !");
   } catch (err) {
     console.error("Erreur :", err);
     process.exit(1);
