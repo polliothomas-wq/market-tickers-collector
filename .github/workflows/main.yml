@@ -1,22 +1,22 @@
 name: Fetch Tickers Daily
 
 on:
+  workflow_dispatch:    # lancement manuel
   schedule:
-    - cron: '0 9 * * *'
-  workflow_dispatch:
+    - cron: "0 6 * * *" # tous les jours à 6h (UTC)
 
 jobs:
   fetch:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: 18
 
       - name: Install dependencies
         run: npm install
@@ -24,8 +24,8 @@ jobs:
       - name: Run fetch script
         run: node fetch_tickers.js
 
-      - name: Upload JSON artifact
-        uses: actions/upload-artifact@v3
+      - name: Upload results
+        uses: actions/upload-artifact@v4
         with:
           name: prices
           path: prices.json
