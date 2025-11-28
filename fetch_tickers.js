@@ -22,8 +22,13 @@ async function fetchPrices() {
   try {
     const data = await fetchPrices();
 
-    // Sauvegarde dans un fichier JSON
-    fs.writeFileSync("prices.json", JSON.stringify(data, null, 2));
+if (data.length === 0) {
+  console.warn("Aucun ticker récupéré !");
+} else {
+  fs.writeFileSync("prices.json", JSON.stringify(data, null, 2));
+  console.log("prices.json créé avec succès !", data.length, "tickers récupérés");
+}
+
 
     console.log("prices.json créé avec succès !");
   } catch (err) {
