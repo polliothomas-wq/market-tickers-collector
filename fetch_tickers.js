@@ -1,12 +1,21 @@
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+const fetch = (...args) =>
+  import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
 async function fetchPrices() {
-  const url = "https://query2.finance.yahoo.com/v7/finance/quote?symbols=AAPL,MSFT";
+  const url =
+    "https://query2.finance.yahoo.com/v7/finance/quote?symbols=AAPL,MSFT";
 
   const res = await fetch(url);
-  const json = await res.json();
 
-  return json.quoteResponse?.result || [];
+  const text = await res.text();
+
+  try {
+    const json = JSON.parse(text);
+    return json.quoteResponse?.result || [];
+  } catch (err) {
+    console.error("Réponse brute reçue:", text);
+    throw err;
+  }
 }
 
 (async () => {
@@ -18,6 +27,3 @@ async function fetchPrices() {
     process.exit(1);
   }
 })();
-
-
-main();
