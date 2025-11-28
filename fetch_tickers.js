@@ -1,45 +1,23 @@
-// fetch_tickers.js
-import fetch from "node-fetch";
-import fs from "fs";
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-async function fetchPrices(tickers) {
-  const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${tickers.join(",")}`;
+async function fetchPrices() {
+  const url = "https://query2.finance.yahoo.com/v7/finance/quote?symbols=AAPL,MSFT";
 
-  const response = await fetch(url, {
-    headers: {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-    }
-  });
+  const res = await fetch(url);
+  const json = await res.json();
 
-  const text = await response.text();
-
-  // Vérification du contenu pour éviter JSON.parse sur une page HTML
-  if (!text.startsWith("{")) {
-    throw new Error("Réponse non JSON de Yahoo (probablement Too Many Requests):\n" + text.substring(0, 200));
-  }
-
-  const data = JSON.parse(text);
-
-  if (!data.quoteResponse || !data.quoteResponse.result) {
-    throw new Error("Structure Yahoo inattendue. Contenu:\n" + text.substring(0, 200));
-  }
-
-  return data.quoteResponse.result;
+  return json.quoteResponse?.result || [];
 }
 
-async function main() {
-  // LISTE TEST — on augmentera plus tard
-  const tickers = ["AAPL", "MSFT"];
-
+(async () => {
   try {
-    const prices = await fetchPrices(tickers);
-
-    fs.writeFileSync("prices.json", JSON.stringify(prices, null, 2));
-    console.log("Prix sauvegardés dans prices.json");
+    const data = await fetchPrices();
+    console.log("Données récupérées :", data);
   } catch (err) {
-    console.error("Erreur:", err.message);
+    console.error("Erreur :", err);
     process.exit(1);
   }
-}
+})();
+
 
 main();
